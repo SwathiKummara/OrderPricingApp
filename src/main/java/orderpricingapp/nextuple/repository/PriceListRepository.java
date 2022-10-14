@@ -17,4 +17,5 @@ public interface PriceListRepository extends JpaRepository<PriceList,String> {
 
     Date findByStartDate(Date date);
      Date findByEndDate(Date date);
+
 }

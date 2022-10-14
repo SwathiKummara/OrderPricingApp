@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "itemslist")
+@Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Item {
@@ -41,9 +41,8 @@ public class Item {
     @Column(name = "organizationcode")
     private String organizationCode;
 
-    @Column(name = "unitofmeasur",unique = true)
+    @Column(name = "unitofmeasure",unique = true)
     private String unitOfMeasure;
-
 
 
 //TODO @Builder noargs and allargs, how to use different profiles.

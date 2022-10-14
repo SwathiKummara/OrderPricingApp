@@ -1,6 +1,8 @@
 package orderpricingapp.nextuple.business;
 
-import orderpricingapp.nextuple.exception.ItemException;
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +17,13 @@ public class ItemPriceController {
     CurrentyearPrices currentyearPrices;
 
 @GetMapping("/itemprice")
-    public ItemPriceRes getItemPrice(@RequestBody ItemPriceReq itemPriceReq) throws ItemException, com.orderPricingApp.springboot.exception.PricelistException, com.orderPricingApp.springboot.exception.PricelinelistException {
+    public ItemPriceRes getItemPrice(@RequestBody ItemPriceReq itemPriceReq) throws NotFoundException, Exception{
     return  itemPriceService.getItemPrice(itemPriceReq);
 
 }
 
 @GetMapping("/currentyearprices/{organizationcode}/{itemId}")
-    public Prices getItemlist(@PathVariable String organizationcode, @PathVariable String itemId, Prices prices, Pricesres pricesres) throws ItemException, com.orderPricingApp.springboot.exception.PricelinelistException, com.orderPricingApp.springboot.exception.PricelistException {
+    public Prices getItemlist(@PathVariable String organizationcode, @PathVariable String itemId, Prices prices, Pricesres pricesres) throws NotFoundException,  DoesNotMatchException, AlreadyExistsException {
     return currentyearPrices.getCurrentYearprices(organizationcode,itemId);
 }
 

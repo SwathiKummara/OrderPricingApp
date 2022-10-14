@@ -1,6 +1,8 @@
 package orderpricingapp.nextuple.controller;
 
-import orderpricingapp.nextuple.exception.ItemException;
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import orderpricingapp.nextuple.model.Item;
 import orderpricingapp.nextuple.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,38 +23,38 @@ public class ItemController {
     }
 
     @GetMapping("/{itemKey}")
-    public Item getItemById(@PathVariable String itemKey) throws ItemException {
+    public Item getItemById(@PathVariable String itemKey) throws NotFoundException {
       return itemService.getByItemKey(itemKey);
     }
 
     @GetMapping("/{organizationCode}/{itemId}")
-    public Optional<Item> getByCodeAndItem(@PathVariable ("organizationCode") String code, @PathVariable("itemId") String id) throws ItemException {
+    public Optional<Item> getByCodeAndItem(@PathVariable ("organizationCode") String code, @PathVariable("itemId") String id) throws NotFoundException, DoesNotMatchException {
        return itemService.getbycodeandid(code,id);
     }
 
 
     @PostMapping
-    public String postItem(@RequestBody Item item) throws ItemException {
+    public String postItem(@RequestBody Item item) throws NotFoundException, AlreadyExistsException {
           return itemService.saveItem(item);
     }
     @DeleteMapping("/{itemKey}")
-    public String deleteitem(@PathVariable("itemKey") String itemKey) throws ItemException {
+    public String deleteitem(@PathVariable("itemKey") String itemKey) throws NotFoundException {
         return itemService.delete(itemKey);
 
     }
 
     @DeleteMapping("/{organizationCode}/{itemId}")
-    public String deletByCodeAndId(@PathVariable ("organizationCode") String code, @PathVariable("itemId") String id) throws ItemException {
+    public String deletByCodeAndId(@PathVariable ("organizationCode") String code, @PathVariable("itemId") String id) throws NotFoundException, DoesNotMatchException {
         return itemService.deleteBycodeAndId(code, id);
 
     }
     @PutMapping("/{itemKey}")
-    public Item updatelist(@RequestBody Item item, @PathVariable ("itemKey") String key) throws ItemException {
+    public Item updatelist(@RequestBody Item item, @PathVariable ("itemKey") String key) throws NotFoundException {
         return itemService.update(key, item);
 
     }
     @PatchMapping("/{itemKey}")
-    public Item patch(@RequestBody Item item, @PathVariable("itemKey") String key) throws ItemException {
+    public Item patch(@RequestBody Item item, @PathVariable("itemKey") String key) throws NotFoundException {
         return itemService.patch(key,item);
     }
 

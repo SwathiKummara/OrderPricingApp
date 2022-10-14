@@ -10,5 +10,4 @@ public class Prices {
     private String itemDescription;
     public  List<Pricesres> prices;
 
-
     }

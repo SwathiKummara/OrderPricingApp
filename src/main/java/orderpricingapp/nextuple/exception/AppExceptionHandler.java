@@ -13,20 +13,21 @@ import java.time.LocalDate;
 
 @ControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
-@ExceptionHandler(ItemException.class)
-    public ResponseEntity<Object> handleNotFoundException(ItemException itemException, WebRequest webRequest){
+@ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException itemException, WebRequest webRequest){
 
     return new ResponseEntity<>(new Apierror(itemException.getMessage(), HttpStatus.NOT_FOUND, LocalDate.now()),HttpStatus.NOT_FOUND);
 }
-    @ExceptionHandler(com.orderPricingApp.springboot.exception.PricelistException.class)
-    public ResponseEntity<Object> handleNotFoundException(com.orderPricingApp.springboot.exception.PricelistException pricelistException, WebRequest webRequest) {
 
-        return new ResponseEntity<>(new Apierror(pricelistException.getMessage(), HttpStatus.NOT_FOUND, LocalDate.now()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<Object> handleNotFound(AlreadyExistsException pricelinelistException, WebRequest webRequest) {
+
+        return new ResponseEntity<>(new Apierror(pricelinelistException.getMessage(), HttpStatus.ALREADY_REPORTED, LocalDate.now()), HttpStatus.ALREADY_REPORTED);
     }
-    @ExceptionHandler(com.orderPricingApp.springboot.exception.PricelinelistException.class)
-    public ResponseEntity<Object> handleNotFound(com.orderPricingApp.springboot.exception.PricelinelistException pricelinelistException, WebRequest webRequest) {
+    @ExceptionHandler(DoesNotMatchException.class)
+    public ResponseEntity<Object> handleNotFound(DoesNotMatchException doesNotMatchException, WebRequest webRequest) {
 
-        return new ResponseEntity<>(new Apierror(pricelinelistException.getMessage(), HttpStatus.NOT_FOUND, LocalDate.now()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new Apierror(doesNotMatchException.getMessage(), HttpStatus.NOT_ACCEPTABLE, LocalDate.now()), HttpStatus.NOT_ACCEPTABLE);
     }
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {

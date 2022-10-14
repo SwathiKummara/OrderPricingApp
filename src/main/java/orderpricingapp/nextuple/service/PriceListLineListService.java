@@ -1,7 +1,9 @@
 package orderpricingapp.nextuple.service;
 
 
-import com.orderPricingApp.springboot.exception.PricelinelistException;
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import orderpricingapp.nextuple.model.Item;
 import orderpricingapp.nextuple.model.PriceList;
 import orderpricingapp.nextuple.model.PricelistLineList;
@@ -31,50 +33,51 @@ public class PriceListLineListService {
         return priceLineListRepository.findAll(pageable).getContent();
     }
 
-    public PricelistLineList add(PricelistLineList pricelistLineList) throws PricelinelistException {
+    public PricelistLineList add(PricelistLineList pricelistLineList) throws DoesNotMatchException, NotFoundException, AlreadyExistsException {
         Optional<PricelistLineList> optionalPricelistLineList = priceLineListRepository.findByOrganizationCodeAndItemkeyAndPricelistkey(pricelistLineList.getOrganizationCode(),pricelistLineList.getItemkey(),pricelistLineList.getPricelistkey());
+
         if (optionalPricelistLineList.isPresent()){
-            throw new PricelinelistException("price list line list is already exists");
+            throw new AlreadyExistsException("price list line list is already exists");
         }
         Optional<PriceList> optionalPriceList = priceListRepository.findById(pricelistLineList.getPricelistkey());
         if(optionalPriceList.isEmpty()){
-            throw new PricelinelistException("price list with key "+ pricelistLineList.getPricelistkey()+" does not exists");
+            throw new AlreadyExistsException("price list with key "+ pricelistLineList.getPricelistkey()+" does not exists");
         }
         if(!optionalPriceList.get().getOrganizationCode().equalsIgnoreCase(pricelistLineList.getOrganizationCode())){
-            throw new PricelinelistException("organization code of  pricelist doesn't match organization code of pricelistlinelist");
+            throw new DoesNotMatchException("organization code of  pricelist doesn't match organization code of pricelistlinelist");
         }
         Optional<Item> optionalItem = itemRepository.findById(pricelistLineList.getItemkey());
         if(optionalItem.isEmpty()){
-            throw new PricelinelistException("Item with key "+ pricelistLineList.getItemkey()+"does not exists");
+            throw new NotFoundException("Item with key "+ pricelistLineList.getItemkey()+"does not exists");
         }
         if(!optionalItem.get().getOrganizationCode().equalsIgnoreCase(pricelistLineList.getOrganizationCode())){
-            throw new PricelinelistException("organization code of  Item doesn't match organization code of pricelistlinelist");
+            throw new DoesNotMatchException("organization code of  Item doesn't match organization code of pricelistlinelist");
         }
         return priceLineListRepository.save(pricelistLineList);
-    }  public PricelistLineList getByKey(String key) throws PricelinelistException {
-        return priceLineListRepository.findById(key).orElseThrow(()->new PricelinelistException("Pricelist does not exists with key"+key));
+    }  public PricelistLineList getByKey(String key) throws AlreadyExistsException, NotFoundException {
+        return priceLineListRepository.findById(key).orElseThrow(()->new NotFoundException("Pricelist does not exists with key "+key));
     }
 
-    public List<PricelistLineList> getByitemKey(String key) throws PricelinelistException {
+    public List<PricelistLineList> getByitemKey(String key) throws AlreadyExistsException {
         return  priceLineListRepository.findByItemkey(key);
     }
 
-    public PricelistLineList update(String key , PricelistLineList pricelistLineList) throws PricelinelistException {
-        PricelistLineList existinglist = priceLineListRepository.findById(key).orElseThrow(() -> new PricelinelistException("Pricelist line list not found with id :" + key));
+    public PricelistLineList update(String key , PricelistLineList pricelistLineList) throws  NotFoundException {
+        PricelistLineList existinglist = priceLineListRepository.findById(key).orElseThrow(() -> new NotFoundException("Pricelist line list not found with id :" + key));
         existinglist.setListPrice(pricelistLineList.getListPrice());
         existinglist.setUnitPrice(pricelistLineList.getUnitPrice());
         return  priceLineListRepository.save(existinglist);
     }
-    public PricelistLineList patch(String key , PricelistLineList pricelistLineList) throws PricelinelistException {
+    public PricelistLineList patch(String key , PricelistLineList pricelistLineList) throws  NotFoundException {
 
-        PricelistLineList existinglist = priceLineListRepository.findById(key).orElseThrow(() -> new PricelinelistException("User not found with id :" + key));
+        PricelistLineList existinglist = priceLineListRepository.findById(key).orElseThrow(() -> new NotFoundException("User not found with id :" + key));
 
         existinglist.setUnitPrice(pricelistLineList.getUnitPrice());
         existinglist.setListPrice(pricelistLineList.getListPrice());
         return  priceLineListRepository.save(existinglist);
     }
-    public String delete(String key) throws PricelinelistException {
-        PricelistLineList existingkey = priceLineListRepository.findById(key).orElseThrow(() -> new PricelinelistException("User not found with key :" + key));
+    public String delete(String key) throws  NotFoundException {
+        PricelistLineList existingkey = priceLineListRepository.findById(key).orElseThrow(() -> new NotFoundException("User not found with key :" + key));
         priceLineListRepository.delete(existingkey);
         return "Pricelistlinelist is deleted successsfully";
     }

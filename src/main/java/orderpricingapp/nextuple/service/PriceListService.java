@@ -1,6 +1,10 @@
 package orderpricingapp.nextuple.service;
 
-import com.orderPricingApp.springboot.exception.PricelistException;
+
+
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import orderpricingapp.nextuple.model.PriceList;
 import orderpricingapp.nextuple.repository.ItemRepository;
 import orderpricingapp.nextuple.repository.PriceLineListRepository;
@@ -26,10 +30,10 @@ public class PriceListService {
         return priceListRepository.findAll();
     }
 
-    public PriceList getByKey(String key) throws com.orderPricingApp.springboot.exception.PricelistException {
-        return priceListRepository.findById(key).orElseThrow(()->new com.orderPricingApp.springboot.exception.PricelistException("Pricelist does not exists with key"+key));
+    public PriceList getByKey(String key) throws DoesNotMatchException {
+        return priceListRepository.findById(key).orElseThrow(()->new DoesNotMatchException("Pricelist does not exists with key"+key));
     }
-    public List<PriceList> getByPricelitKey(String key) throws com.orderPricingApp.springboot.exception.PricelistException {
+    public List<PriceList> getByPricelitKey(String key) {
         return (List<PriceList>) priceListRepository.findByPriceListKey(key);
     }
 
@@ -42,21 +46,21 @@ public class PriceListService {
         return priceListRepository.findByActiveAndOrganizationCode(status,name);
     }
 
-    public String saveList(PriceList priceList) throws PricelistException {
+    public String saveList(PriceList priceList) throws AlreadyExistsException {
         Optional<PriceList> priceList1 = priceListRepository.findById(priceList.getPriceListKey());
 
-        if(priceList1 == null){
+        if(priceList1.isEmpty()){
             priceListRepository.save(priceList);
             return "pricelist added Successfully";
         }
         else {
-            throw new PricelistException("pricelist already exists!");
+            throw new AlreadyExistsException("pricelist already exists!");
         }
    }
 
 
-    public PriceList update(String key , PriceList priceList) throws PricelistException {
-        PriceList existinglist = priceListRepository.findById(key).orElseThrow(() -> new PricelistException("Pricelist not found with id :" + key));
+    public PriceList update(String key , PriceList priceList) throws NotFoundException {
+        PriceList existinglist = priceListRepository.findById(key).orElseThrow(() -> new NotFoundException("Pricelist not found with id :" + key));
         existinglist.setActive(priceList.getActive());
         existinglist.setPriceListName(priceList.getPriceListName());
         existinglist.setEndDate(priceList.getEndDate());
@@ -64,26 +68,26 @@ public class PriceListService {
         existinglist.setOrganizationCode(priceList.getOrganizationCode());
         return  priceListRepository.save(existinglist);
     }
-    public PriceList patch(String key , PriceList priceList) throws PricelistException {
+    public PriceList patch(String key , PriceList priceList) throws NotFoundException {
 
-        PriceList existinglist = priceListRepository.findById(key).orElseThrow(() -> new PricelistException("Pricelist not found with id :" + key));
+        PriceList existinglist = priceListRepository.findById(key).orElseThrow(() -> new NotFoundException("Pricelist not found with id :" + key));
         existinglist.setPriceListName(priceList.getPriceListName());
         return  priceListRepository.save(existinglist);
 
     }
-    public Date getStartDate(Date date) throws PricelistException{
+    public Date getStartDate(Date date) {
         return  priceListRepository.findByStartDate(date);
     }
-public Date getEnddate(Date date) throws  PricelistException{
+public Date getEnddate(Date date) {
         return  priceListRepository.findByEndDate(date);
 }
-//public String delete(String key) throws PricelistException {
+//public String delete(String key) throws Exception {
 //Optional<PriceList> optionalPriceList = priceListRepository.findById(String.valueOf(priceLineListRepository.findById(key)));
 //
 //if(optionalPriceList.isPresent()){
-//    throw new PricelistException("price list with key "+key+" present in pricelistline list so can't delete");
+//    throw new Exception("price list with key "+key+" present in pricelistline list so can't delete");
 //}
-//        priceListRepository.delete(optionalPriceList);
+//        priceListRepository.delete(priceLineListRepository.findById(key));
 //    return "Pricelist is deleted successsfully";}
 
 }

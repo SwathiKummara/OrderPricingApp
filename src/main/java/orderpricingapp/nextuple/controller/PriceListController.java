@@ -1,5 +1,8 @@
 package orderpricingapp.nextuple.controller;
 
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import orderpricingapp.nextuple.model.PriceList;
 import orderpricingapp.nextuple.repository.PriceListRepository;
 import orderpricingapp.nextuple.service.PriceListService;
@@ -25,7 +28,7 @@ public class PriceListController {
     }
 
     @GetMapping("{pricelistkey}")
-    public PriceList getByName(@PathVariable("pricelistkey") String key) throws com.orderPricingApp.springboot.exception.PricelistException {
+    public PriceList getByName(@PathVariable("pricelistkey") String key) throws  DoesNotMatchException {
         return priceListService.getByKey(key);
     }
 //    @GetMapping("get/{organizationcode}/{name}")
@@ -39,26 +42,26 @@ public class PriceListController {
 //    }
 //
     @PostMapping
-    private String savePriceList(@RequestBody PriceList priceList) throws com.orderPricingApp.springboot.exception.PricelistException {
+    private String savePriceList(@RequestBody PriceList priceList) throws AlreadyExistsException {
         return  priceListService.saveList(priceList);
 
     }
 
 
     @PutMapping("/{pricelistkey}")
-    public PriceList updatelist(@RequestBody PriceList priceList, @PathVariable ("pricelistkey") String key) throws com.orderPricingApp.springboot.exception.PricelistException {
+    public PriceList updatelist(@RequestBody PriceList priceList, @PathVariable ("pricelistkey") String key) throws NotFoundException {
        return priceListService.update(key,priceList);
 
     }
 
     @PatchMapping("/{pricelistkey}")
-    public PriceList patch(@RequestBody PriceList p,@PathVariable("pricelistkey") String key) throws com.orderPricingApp.springboot.exception.PricelistException {
+    public PriceList patch(@RequestBody PriceList p,@PathVariable("pricelistkey") String key) throws NotFoundException {
         return priceListService.patch(key,p);
     }
 
 
 //    @DeleteMapping("/{pricelistkey}")
-//    public String deletePricelistByName(@PathVariable("pricelistkey") String key) throws com.orderPricingApp.springboot.exception.PricelistException {
+//    public String deletePricelistByName(@PathVariable("pricelistkey") String key) throws Exception {
 //
 //        return priceListService.delete(key);
 //    }

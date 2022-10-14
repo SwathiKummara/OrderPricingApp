@@ -4,12 +4,13 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "pricelisttable")
+@Table(name = "pricelist")
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -26,12 +27,12 @@ public class PriceList {
     private String active;
 
     @Column(name = "startdate")
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+//    @Temporal(TemporalType.DATE)
+    private LocalDate startDate;
 
     @Column(name = "enddate")
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
+//    @Temporal(TemporalType.DATE)
+    private LocalDate endDate;
 
     @Column(name = "organizationcode")
     private String organizationCode;

@@ -20,12 +20,12 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@Table(name = "pricelistline")
+@Table(name = "pricelistlinelist")
 
 public class PricelistLineList {
 
     @Id
-    @Column(name = "pricelistlinekey")
+    @Column(name = "pllkey")
     private String pricelistLinekey;
 
     @Column(name = "pricelistkey")

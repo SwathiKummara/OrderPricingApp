@@ -1,7 +1,8 @@
 package orderpricingapp.nextuple.business;
 
-import com.orderPricingApp.springboot.exception.PricelinelistException;
-import orderpricingapp.nextuple.exception.ItemException;
+import orderpricingapp.nextuple.exception.AlreadyExistsException;
+import orderpricingapp.nextuple.exception.DoesNotMatchException;
+import orderpricingapp.nextuple.exception.NotFoundException;
 import orderpricingapp.nextuple.model.Item;
 import orderpricingapp.nextuple.model.PriceList;
 import orderpricingapp.nextuple.model.PricelistLineList;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.text.SimpleDateFormat;
 import java.time.Year;
 import java.util.*;
 
@@ -32,11 +32,11 @@ public class CurrentyearPrices {
     @Autowired
     PriceListLineListService priceListLineListService;
 
-    public Prices getCurrentYearprices(@RequestParam String organizationCode, @RequestParam String itemId) throws ItemException, com.orderPricingApp.springboot.exception.PricelinelistException, com.orderPricingApp.springboot.exception.PricelistException {
+    public Prices getCurrentYearprices(@RequestParam String organizationCode, @RequestParam String itemId) throws NotFoundException,  DoesNotMatchException, AlreadyExistsException {
         Calendar calendar = Calendar.getInstance();
-       Prices prices = new Prices();
-//       Pricesres pricesres = new Pricesres();
-//        Pricesres pricesres = null;
+        calendar.clear();
+        Prices prices = new Prices();
+
 
         Optional<Item> itemIdcheck = itemService.getbyitemId(itemId);
         ArrayList priceslist = new ArrayList();
@@ -48,18 +48,14 @@ public class CurrentyearPrices {
             String itemKey = itemIdcheck.get().getItemKey();
 
             List<PricelistLineList> pricelistLineList = (priceListLineListService.getByitemKey(itemKey));
-            for (int i = 0; i < pricelistLineList.size(); i++) {
+            for (var i = 0; i < pricelistLineList.size(); i++) {
                 Optional<PricelistLineList> pricelistLineList1 = Optional.ofNullable(pricelistLineList.get(i));
                 Pricesres pricesres = new Pricesres();
-
                 if (itemKey.equals(pricelistLineList1.get().getItemkey())) {
-                    Optional<PriceList> priceList = Optional.ofNullable(priceListService.getByKey(pricelistLineList1.get().getPricelistkey()));
-                    calendar.setTime(priceList.get().getStartDate());
-                    Year startyear = Year.of(calendar.get(Calendar.YEAR));
-                    calendar.setTime(priceList.get().getEndDate());
-                    Year endyear = Year.of(calendar.get(Calendar.YEAR));
 
-                    if (Year.now().equals(startyear) && Year.now().equals(endyear)) {
+                    Optional<PriceList> priceList = Optional.ofNullable(priceListService.getByKey(pricelistLineList1.get().getPricelistkey()));
+
+                    if (Year.now().equals(Year.of(priceList.get().getStartDate().getYear())) &&Year.now().equals (Year.of(priceList.get().getEndDate().getYear()))) {
 
                         pricesres.setFromdate(priceList.get().getStartDate());
                         pricesres.setTodate(priceList.get().getEndDate());
@@ -70,26 +66,25 @@ public class CurrentyearPrices {
                         prices.setPrices(priceslist);
 
 
-
                     }
-                    if (!Year.now().equals(startyear) || !Year.now().equals(endyear)){
-                        throw new PricelinelistException("itemId "+itemId+" do not have any prices in the currenyear with organization code"+ organizationCode);
+                    if (!Year.now().equals(Year.of(priceList.get().getStartDate().getYear())) && !Year.now().equals (Year.of(priceList.get().getEndDate().getYear()))){
+                        throw new AlreadyExistsException("itemId "+itemId+" do not have any prices in the currentyear with organization code "+ organizationCode);
                     }
                 }
 
             }
         }
         if (itemIdcheck.isEmpty()) {
-            throw new ItemException("item id does not exists with id " + itemId);
+            throw new NotFoundException("item id does not exists with id " + itemId);
         }
         Optional<List<Item>> itemOrgCheck = itemService.getbyOrganizationcode(organizationCode);
         if (itemOrgCheck.isEmpty()) {
-            throw new ItemException("item did not found with orgaization code " + organizationCode);
+            throw new NotFoundException("item did not found with organization code " + organizationCode);
         }
 
         Optional<Item> itemidAndOrgCheck = itemService.getbycodeandid(organizationCode, itemId);
         if (itemidAndOrgCheck.isEmpty()) {
-            throw new ItemException("itemid " + itemId + " with organizationcode " + organizationCode + " doesn't match.");
+            throw new DoesNotMatchException("itemid " + itemId + " with organizationcode " + organizationCode + " doesn't match.");
 
         }
 
